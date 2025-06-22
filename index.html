@@ -164,6 +164,27 @@
   background: #eef3fc;
 }
 
+/* keeps nice spacing on desktop and mobile */
+.action-group{
+  display:flex;
+  flex-wrap:wrap;
+  justify-content:center;
+  gap:0.75rem;          /* ← the visible gap you asked for */
+  margin-top:1rem;
+}
+
+@media(max-width:600px){
+  .action-group{
+    flex-direction:column;
+    gap:0.75rem;        /* keeps the same gap when stacked */
+  }
+  .action-group > *{
+    width:100%;
+    box-sizing:border-box;
+  }
+}
+
+
     </style>
 </head>
 
@@ -190,13 +211,16 @@
 
 
 
-        <div class="file-picker" id="picker">
-  <input type="file" id="csvFile" accept=".csv">
-  <span id="pickerLabel">Choose CSV File</span>
+<div class="action-group">
+  <div class="file-picker" id="picker">
+    <input type="file" id="csvFile" accept=".csv">
+    <span id="pickerLabel">Choose CSV File</span>
+  </div>
+
+  <button type="button" id="cleanBtn">Clean & Download</button>
+  <button type="button" id="resetBtn">Reset</button>
 </div>
 
-<button type="button" id="cleanBtn">Clean & Download</button>
-<button type="button" id="resetBtn">Reset</button>
 
     </div>
 
