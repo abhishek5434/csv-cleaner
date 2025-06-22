@@ -1,179 +1,281 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Zeta Global CSV Cleaner</title>
-  <style>
-    :root {
-      font-family: Arial, Helvetica, sans-serif;
-      --zeta-blue: #0033a0;
-      --zeta-gray: #f4f6f8;
-    }
-    body {
-      background: var(--zeta-gray);
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: start;
-      padding: 20px;
-      min-height: 100vh;
-      margin: 0;
-    }
-    .container {
-      background: white;
-      padding: 2rem;
-      border-radius: 8px;
-      box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-      width: 100%;
-      max-width: 600px;
-      text-align: center;
-    }
-    h2 {
-      color: var(--zeta-blue);
-      margin-top: 0;
-    }
-    p.description {
-      color: #444;
-      font-size: 1rem;
-      line-height: 1.6;
-      margin-bottom: 1.5rem;
-    }
-    .controls {
-      display: flex;
-      flex-wrap: wrap;
-      justify-content: center;
-      gap: 0.5rem;
-      align-items: center;
-      margin-top: 1rem;
-    }
-    .controls input[type="file"] {
-      cursor: pointer;
-    }
-    button {
-      background-color: var(--zeta-blue);
-      color: white;
-      border: none;
-      padding: 0.75rem 1.5rem;
-      border-radius: 4px;
-      cursor: pointer;
-      font-size: 1rem;
-      min-width: 140px;
-    }
-    button:hover:not(:disabled) {
-      background-color: #002a85;
-    }
-    button:disabled {
-      opacity: 0.6;
-      cursor: not-allowed;
-    }
-    footer {
-      margin-top: 2rem;
-      font-size: 0.9rem;
-      color: #666;
-      text-align: center;
-    }
-
-    /* Responsive tweaks */
-    @media (max-width: 600px) {
-      .container {
-        padding: 1rem;
-      }
-      .controls {
-        flex-direction: column;
-      }
-      button, .controls input[type="file"] {
-        width: 100%;
-        box-sizing: border-box;
-      }
-    }
-  </style>
-</head>
-<body>
-  <div class="container">
-    <img 
-      src="https://zetaglobal.com/wp-content/uploads/2023/02/zeta_logoPrimary.svg" 
-      alt="Zeta Global Logo" 
-      class="logo" 
-      style="width:250px; margin-bottom:1rem;"
-    />
-    <h2>CSV Cleaner</h2>
-    <p class="description">
-      This tool is designed to help clean and standardize CSV files before using them in other systems.
-      It removes unnecessary or unnamed columns, drops empty rows, and wraps every field in double quotes
-      for maximum compatibility.<br><br>
-      Simply choose your CSV file below, then click <strong>“Clean & Download”</strong> to get a cleaned version.
-    </p>
-
-    <div class="controls">
-      <input type="file" id="csvFile" accept=".csv" />
-      <button type="button" id="cleanBtn">Clean & Download</button>
-      <button type="button" id="resetBtn">Reset</button>
-    </div>
-  </div>
-
-  <!-- Libraries -->
-  <script src="https://cdn.jsdelivr.net/npm/papaparse@5.3.2/papaparse.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/file-saver@2.0.5/dist/FileSaver.min.js"></script>
-
-  <!-- App Script -->
-  <script>
-    document.addEventListener('DOMContentLoaded', () => {
-      const fileInput = document.getElementById('csvFile');
-      const cleanBtn   = document.getElementById('cleanBtn');
-      const resetBtn   = document.getElementById('resetBtn');
-      const footer     = document.getElementById('footer');
-
-      // Dynamic footer year
-      footer.innerText = `© ${new Date().getFullYear()} Developed by Abhishek Raj, Sr BSA, Zeta Global`;
-
-      // Toggle loading state
-      function setLoading(isLoading) {
-        cleanBtn.disabled = isLoading;
-        cleanBtn.innerText = isLoading ? 'Processing…' : 'Clean & Download';
-      }
-
-      cleanBtn.addEventListener('click', () => {
-        if (!fileInput.files.length) {
-          alert('Please choose a CSV file first!');
-          return;
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Zeta Global CSV Cleaner</title>
+    <style>
+        :root {
+            font-family: Arial, Helvetica, sans-serif;
+            --zeta-blue: #0033a0;
+            --zeta-gray: #f4f6f8;
         }
-        setLoading(true);
 
-        Papa.parse(fileInput.files[0], {
-          header: true,
-          skipEmptyLines: true,
-          complete: results => {
-            const { data, meta: { fields } } = results;
-            const headers = fields.filter(h => h.trim() && !h.startsWith('Unnamed'));
-            const cleaned = data.map(row => {
-              const obj = {};
-              headers.forEach(h => obj[h] = (row[h] || '').toString());
-              return obj;
+        body {
+            background: var(--zeta-gray);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: start;
+            padding: 20px;
+            min-height: 100vh;
+            margin: 0;
+        }
+
+        .container {
+            background: white;
+            padding: 2rem;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 600px;
+            text-align: center;
+        }
+
+        h2 {
+            color: var(--zeta-blue);
+            margin-top: 0;
+        }
+
+        p.description {
+            color: #444;
+            font-size: 1rem;
+            line-height: 1.6;
+            margin-bottom: 1.5rem;
+        }
+
+        .controls {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 0.5rem;
+            align-items: center;
+            margin-top: 1rem;
+        }
+
+        .controls input[type="file"] {
+            cursor: pointer;
+        }
+
+        button {
+            background-color: var(--zeta-blue);
+            color: white;
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 1rem;
+            min-width: 140px;
+        }
+
+        button:hover:not(:disabled) {
+            background-color: #002a85;
+        }
+
+        button:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+        footer {
+            margin-top: 2rem;
+            font-size: 0.9rem;
+            color: #666;
+            text-align: center;
+        }
+
+        /* Responsive tweaks */
+        @media (max-width: 600px) {
+            .container {
+                padding: 1rem;
+            }
+
+            .controls {
+                flex-direction: column;
+            }
+
+            button,
+            .controls input[type="file"] {
+                width: 100%;
+                box-sizing: border-box;
+            }
+        }
+
+        .info-box {
+            background-color: #f9fbff;
+            border: 1px solid #d6e1f5;
+            border: 4px solid var(--zeta-blue);
+            color: #333;
+            font-size: 0.95rem;
+            text-align: left;
+            padding: 1rem 1.25rem;
+            margin: 1rem auto 1.5rem;
+            border-radius: 6px;
+            max-width: 500px;
+            line-height: 1.6;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.03);
+        }
+
+        .info-box code {
+            background-color: #eef3fc;
+            font-family: monospace;
+            padding: 2px 5px;
+            border-radius: 4px;
+        }
+
+        /* ── Slim, neutral file picker ─────────────────────────── */
+.file-picker {
+  display: inline-block;
+  position: relative;
+  width: 220px;          /* feel free to tweak */
+  height: 44px;
+  margin-bottom: 0.5rem;
+}
+
+.file-picker input[type="file"] {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  cursor: pointer;
+}
+
+.file-picker span {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  background: #fff;
+  font-size: 0.95rem;
+  color: #333;
+  transition: border-color 0.2s;
+  user-select: none;
+}
+
+.file-picker:hover span {
+  border-color: var(--zeta-blue);
+}
+
+.file-picker.selected span {
+  border-color: var(--zeta-blue);
+  background: #eef3fc;
+}
+
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <img src="https://zetaglobal.com/wp-content/uploads/2023/02/zeta_logoPrimary.svg" alt="Zeta Global Logo"
+            class="logo" style="width:250px; margin-bottom:1rem;" />
+        <h2>CSV Cleaner</h2>
+
+        <div class="info-box">
+            <strong>What this tool does:</strong><br>
+            • Cleans up CSV files by removing unnamed columns<br>
+            • Skips empty rows<br>
+            • Wraps every field in double quotes<br><br>
+
+            <strong>Note on large files:</strong><br>
+            If your file is large, it will be split into parts automatically:<br>
+            • Single file → <code>yourfile_output.csv</code><br>
+            • Multiple files → <code>yourfile_output_part1.csv</code>, <code>part2.csv</code>, etc.<br><br>
+
+            This ensures stability and avoids browser memory issues.
+        </div>
+
+
+
+
+        <div class="file-picker" id="picker">
+  <input type="file" id="csvFile" accept=".csv">
+  <span id="pickerLabel">Choose CSV File</span>
+</div>
+
+<button type="button" id="cleanBtn">Clean & Download</button>
+<button type="button" id="resetBtn">Reset</button>
+
+    </div>
+
+    <!-- Libraries -->
+    <script src="https://cdn.jsdelivr.net/npm/papaparse@5.3.2/papaparse.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/file-saver@2.0.5/dist/FileSaver.min.js"></script>
+
+    <!-- App Script -->
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const fileInput = document.getElementById('csvFile');
+            const cleanBtn = document.getElementById('cleanBtn');
+            const resetBtn = document.getElementById('resetBtn');
+            const footer = document.getElementById('footer');
+
+            footer.innerText = `© ${new Date().getFullYear()} Developed by Abhishek Raj, Sr BSA, Zeta Global`;
+
+            const CHUNK_SIZE = 50000; // adjust as needed
+
+            cleanBtn.addEventListener('click', () => {
+                if (!fileInput.files.length) {
+                    alert('Please choose a CSV file first!');
+                    return;
+                }
+
+                cleanBtn.disabled = true;
+                cleanBtn.innerText = 'Processing…';
+
+                Papa.parse(fileInput.files[0], {
+                    header: true,
+                    skipEmptyLines: true,
+                    complete: ({ data, meta: { fields } }) => {
+                        const baseName = fileInput.files[0].name.replace(/\.csv$/i, '');
+                        const headers = fields.filter(h => h && h.trim() && !h.startsWith('Unnamed'));
+                        const totalParts = Math.ceil(data.length / CHUNK_SIZE);
+
+                        for (let i = 0; i < data.length; i += CHUNK_SIZE) {
+                            const chunk = data.slice(i, i + CHUNK_SIZE).map(row => {
+                                const obj = {};
+                                headers.forEach(h => obj[h] = (row[h] || '').toString());
+                                return obj;
+                            });
+
+                            const csv = Papa.unparse(chunk, {
+                                quotes: true,
+                                quoteChar: '"',
+                                header: true,
+                                columns: headers
+                            });
+
+                            const blob = new Blob([csv], { type: 'text/csv;charset=utf-8' });
+                            const partNum = totalParts === 1 ? '' : `_part${Math.floor(i / CHUNK_SIZE) + 1}`;
+                            const fileName = totalParts === 1
+                                ? `${baseName}_output.csv`
+                                : `${baseName}_output${partNum}.csv`;
+
+                            saveAs(blob, fileName);
+                        }
+
+                        cleanBtn.disabled = false;
+                        cleanBtn.innerText = 'Clean & Download';
+                    },
+                    error: err => {
+                        alert('Error parsing CSV: ' + err.message);
+                        cleanBtn.disabled = false;
+                        cleanBtn.innerText = 'Clean & Download';
+                    }
+                });
             });
-            const csv = Papa.unparse(cleaned, {
-              quotes: true,
-              quoteChar: '"',
-              header: true
+
+            resetBtn.addEventListener('click', () => {
+                fileInput.value = '';
             });
-            const blob = new Blob([csv], { type: 'text/csv;charset=utf-8' });
-            const baseName = fileInput.files[0].name.replace(/\.csv$/i, '');
-            saveAs(blob, `${baseName}_output.csv`);
-            setLoading(false);
-          },
-          error: err => {
-            alert('Error parsing CSV: ' + err.message);
-            setLoading(false);
-          }
         });
-      });
+    </script>
 
-      resetBtn.addEventListener('click', () => {
-        fileInput.value = '';
-      });
-    });
-  </script>
 
-  <footer id="footer"></footer>
+
+    <footer id="footer"></footer>
 </body>
+
 </html>
