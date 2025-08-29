@@ -64,12 +64,21 @@
 
 <body>
     <div class="container">
-        <img src="./data_cleaner_logo.png" alt="LOGO"
-            class="logo">
+        <img src="./data_cleaner_logo.png" alt="LOGO" class="logo">
         <h2>CSV Cleaner</h2>
         <input type="file" id="csvFile" accept=".csv" />
         <button onclick="processCSV()">Clean & Download</button>
         <button onclick="resetForm()">Reset</button>
+        <!-- ✅ Copyright Footer -->
+        <footer style="text-align: center; margin-top: 20px; font-size: 12px; color: #555;">
+            © <span id="year"></span> Abhishek Raj. All rights reserved.
+        </footer>
+
+        <script>
+            document.getElementById("year").textContent = new Date().getFullYear();
+        </script>
+
+
 
     </div>
 
